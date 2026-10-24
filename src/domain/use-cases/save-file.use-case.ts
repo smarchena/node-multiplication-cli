@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { yarg } from '../../config/plugins/yargs.plugin.js';
 
 export interface SaveFileUseCase {
     execute: (options: Options) => boolean;
@@ -20,7 +19,7 @@ export class SaveFile implements SaveFileUseCase {
     execute({
         fileContent,
         fileDestination = 'outputs',
-        fileName = `table-${yarg.base}`,
+        fileName = `table`,
     }: Options): boolean {
 
         try {
