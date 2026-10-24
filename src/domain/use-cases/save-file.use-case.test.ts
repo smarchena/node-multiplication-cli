@@ -1,8 +1,10 @@
-import { afterEach, describe, expect, test } from "@jest/globals";
+import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import fs from 'fs';
 import { SaveFile } from "./save-file.use-case";
 
 describe('SaveFilesUseCase', () => {
+
+
 
     const customOptions = {
         fileContent: 'custom content',
@@ -44,10 +46,7 @@ describe('SaveFilesUseCase', () => {
     test('should save file with custom values', () => {
 
         const saveFile = new SaveFile();
-
-
         const result = saveFile.execute(customOptions);
-
         const checkFile = fs.existsSync(customFilePath);
         const fileContent = fs.readFileSync(customFilePath, { encoding: 'utf-8' });
 
@@ -55,7 +54,37 @@ describe('SaveFilesUseCase', () => {
         expect(checkFile).toBe(true);
         expect(fileContent).toBe(customOptions.fileContent);
 
+    });
 
+    test('should return false if directory could not be created', () => {
+
+        const saveFile = new SaveFile();
+        const mkdirSpy = jest.spyOn(fs, 'mkdirSync').mockImplementation(
+            () => { throw new Error('This is a custom error message from testing.'); }
+        );
+
+        const result = saveFile.execute(customOptions);
+
+        expect(result).toBe(false);
+
+        mkdirSpy.mockRestore();
 
     });
+
+    test('should return false if file could not be created', () => {
+
+        const saveFile = new SaveFile();
+        const writeFileSpy = jest.spyOn(fs, 'writeFileSync').mockImplementation(
+            () => { throw new Error('This is a custom writing error message from testing.'); }
+        );
+
+        const result = saveFile.execute({ fileContent: 'Hola' });
+
+        expect(result).toBe(false);
+
+        writeFileSpy.mockRestore();
+
+    });
+
+
 });
