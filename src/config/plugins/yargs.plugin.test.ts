@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 
+declare const process: { argv: string[] };
+
 const runCommand = async (args: string[]) => {
 
     process.argv = [...process.argv, ...args];
