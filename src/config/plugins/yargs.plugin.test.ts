@@ -1,0 +1,49 @@
+import { beforeEach, describe, expect, jest, test } from "@jest/globals";
+
+declare const process: { argv: string[] };
+
+const runCommand = async (args: string[]) => {
+
+    process.argv = [...process.argv, ...args];
+
+    const { yarg } = await import('./yargs.plugin');
+    return yarg;
+}
+
+describe('Test yargs.plugin.ts', () => {
+
+    const originalArgv = process.argv;
+
+    beforeEach(() => {
+        process.argv = originalArgv;
+        jest.resetModules();
+    });
+
+    test('should return default values', async () => {
+
+        const argv = await runCommand(['-b', '5']);
+
+        expect(argv).toEqual(expect.objectContaining({
+            b: 5,
+            l: 10,
+            s: false,
+            n: 'multiplication-table',
+            d: 'outputs',
+
+        }));
+    });
+
+    test('should return configuration with custom values', async () => {
+
+        const argv = await runCommand(['-b', '20', '-l', '30', '-s', 'true', '-n', 'multiplication-table-custom', '-d', 'custom-outputs']);
+
+        expect(argv).toEqual(expect.objectContaining({
+            b: 20,
+            l: 30,
+            s: true,
+            n: 'multiplication-table-custom',
+            d: 'custom-outputs',
+            
+        }));
+    });
+});
